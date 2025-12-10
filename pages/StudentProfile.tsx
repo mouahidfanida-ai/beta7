@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getStudent, saveStudent, getClass } from '../services/store';
@@ -60,7 +61,10 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ isTeacher = false }) =>
     return (sum / 3).toFixed(2);
   };
 
-  const profileUrl = typeof window !== 'undefined' ? window.location.href : '';
+  // Dynamically detect current domain for the share link
+  const profileUrl = id 
+    ? `${window.location.origin}/student-profile/${id}` 
+    : window.location.origin;
 
   useEffect(() => {
     const generateQR = async () => {
@@ -69,6 +73,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ isTeacher = false }) =>
             const url = await QRCode.toDataURL(profileUrl, {
                 width: 300,
                 margin: 2,
+                errorCorrectionLevel: 'M',
                 color: {
                     dark: '#0f172a',
                     light: '#ffffff'
@@ -249,7 +254,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ isTeacher = false }) =>
                           <QrCode className="w-8 h-8" />
                       </div>
                       <h3 className="text-2xl font-extrabold text-slate-900">Share Profile</h3>
-                      <p className="text-slate-500 font-medium text-sm mt-1">Scan to view on mobile</p>
+                      <p className="text-slate-500 font-medium text-sm mt-1">Scan to view student profile</p>
                   </div>
 
                   <div className="flex justify-center mb-8">
@@ -275,7 +280,8 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ isTeacher = false }) =>
                               type="text" 
                               readOnly 
                               value={profileUrl} 
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 text-sm font-medium text-slate-600 focus:outline-none"
+                              onClick={(e) => e.currentTarget.select()}
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-600 focus:outline-none truncate"
                           />
                           <button 
                               onClick={copyToClipboard}
